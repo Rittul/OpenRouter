@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum MessageRole {
+  user
+  assistant
+  system
+}
+
+enum TransactionType {
+  credit
+  usage
+}
+
+enum TransactionStatus {
+  pending
+  success
+  failed
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password_hash String
+  created_at    DateTime       @default(now())
+
+  api_keys      ApiKey[]
+  credits       Credit?
+  transactions  Transaction[]
+  conversations Conversation[]
+}
+
+model ApiKey {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  name          String?
+  key_hash      String    @unique
+  disabled      Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  last_used_at  DateTime?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  conversations Conversation[]
+}
+
+model Credit {
+  user_id    Int      @id
+  balance    Decimal  @default(1000)
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id              Int               @id @default(autoincrement())
+  user_id         Int
+  type            TransactionType
+  amount          Decimal
+  status          TransactionStatus
+  provider        String            @default("razorpay")
+  provider_txn_id String?
+  created_at      DateTime          @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Company {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  website String?
+
+  models Model[]
+}
+
+model Model {
+  id         Int     @id @default(autoincrement())
+  name       String
+  slug       String
+  company_id Int
+
+  company Company @relation(fields: [company_id], references: [id], onDelete: Cascade)
+
+  mappings ModelProviderMapping[]
+}
+
+model Provider {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  website String?
+
+  mappings ModelProviderMapping[]
+}
+
+model ModelProviderMapping {
+  id                 Int      @id @default(autoincrement())
+  model_id           Int
+  provider_id        Int
+  input_token_cost   Decimal?
+  output_token_cost  Decimal?
+  priority           Int      @default(1)
+  is_active          Boolean  @default(true)
+
+  model    Model    @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  provider Provider @relation(fields: [provider_id], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@unique([model_id, provider_id])
+}
+
+model Conversation {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  api_key_id  Int?
+  created_at  DateTime  @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  api_key ApiKey? @relation(fields: [api_key_id], references: [id], onDelete: SetNull)
+
+  messages Message[]
+}
+
+model Message {
+  id                         Int          @id @default(autoincrement())
+  conversation_id            Int
+  role                       MessageRole
+  content                    String
+  model_provider_mapping_id  Int?
+  input_tokens               Int?
+  output_tokens              Int?
+  cost                       Decimal?
+  created_at                 DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  mapping ModelProviderMapping? @relation(fields: [model_provider_mapping_id], references: [id])
+}
