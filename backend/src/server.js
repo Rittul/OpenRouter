@@ -18,8 +18,11 @@ app.get("/",(req,res)=>{
 const authRouter= require("./routes/auth");
 const profileRouter=require("./routes/profile");
 const apiRouter=require("./routes/apikey");
+const chatRouter =require("./routes/chat");
+const conversationroute=require("./routes/conversation");
 
-
+app.use("/chat", chatRouter);
+app.use("/",conversationroute);
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",apiRouter);
