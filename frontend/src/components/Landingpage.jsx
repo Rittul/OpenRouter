@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-// import './Landingpage.css'
+import { useNavigate } from 'react-router-dom'
 import "../css/Landingpage.css";
+import Auth from './Auth'
 
 const MODELS = [
   { name: 'Claude Sonnet 4.6',  provider: 'Anthropic', ctx: '200K', input: '$3.00',  output: '$15.00', color: '#d4915a' },
@@ -49,8 +50,21 @@ const FEATURES = [
 
 const NAV_LINKS = ['Models', 'Docs', 'Pricing', 'Rankings', 'Changelog']
 
-const Landingpage = () => {
+const Landingpage = ({ showAuthModal = false }) => {
+  const navigate = useNavigate()
   const [scrolled, setScrolled] = useState(false)
+  const [showAuth, setShowAuth] = useState(showAuthModal)
+
+  const openAuth = (e) => {
+    e?.preventDefault()
+    setShowAuth(true)
+    navigate('/Auth', { replace: true })
+  }
+
+  const closeAuth = () => {
+    setShowAuth(false)
+    navigate('/', { replace: true })
+  }
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50)
@@ -73,8 +87,8 @@ const Landingpage = () => {
             ))}
           </ul>
           <div className="nav__right">
-            <a href="#" className="nav__signin">Sign in</a>
-            <a href="#" className="btn btn--primary">Get started</a>
+            <a href="#" className="nav__signin" onClick={openAuth}>Sign in</a>
+            <a href="#" className="btn btn--primary" onClick={openAuth}>Get started</a>
           </div>
         </div>
       </nav>
@@ -93,7 +107,7 @@ const Landingpage = () => {
             real-time pricing, and zero lock-in.
           </p>
           <div className="hero__actions">
-            <a href="#" className="btn btn--primary btn--lg">Start for free</a>
+            <a href="#" className="btn btn--primary btn--lg" onClick={openAuth}>Start for free</a>
             <a href="#" className="btn btn--outline btn--lg">Browse models</a>
           </div>
           <div className="hero__code">
@@ -101,16 +115,17 @@ const Landingpage = () => {
               <span className="hero__code-title">Quick start</span>
               <span className="hero__code-copy">Copy</span>
             </div>
-            <pre className="hero__code-body">{`user@macbook-pro ~ % export OPENROUTER_API_KEY="sk-••••••••••••"
-user@macbook-pro ~ % curl https://openrouter.ai/api/v1/chat/completions \
-  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "anthropic/claude-sonnet-4-6",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'
-
-{ "id": "chatcmpl-123", "choices": [{ "message": { "role": "assistant", "content": "Hi!" } }] }`}</pre>
+            <pre className="hero__code-body">{`const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Authorization': \`Bearer \${process.env.OPENROUTER_API_KEY}\`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    model: 'anthropic/claude-sonnet-4-6',
+    messages: [{ role: 'user', content: 'Hello!' }],
+  }),
+})`}</pre>
           </div>
         </div>
       </section>
@@ -217,7 +232,7 @@ user@macbook-pro ~ % curl https://openrouter.ai/api/v1/chat/completions \
             Upgrade as your usage grows.
           </p>
           <div className="cta__actions">
-            <a href="#" className="btn btn--primary btn--lg">Create free account</a>
+            <a href="#" className="btn btn--primary btn--lg" onClick={openAuth}>Create free account</a>
             <a href="#" className="btn btn--outline btn--lg">Read the docs</a>
           </div>
         </div>
@@ -253,6 +268,8 @@ user@macbook-pro ~ % curl https://openrouter.ai/api/v1/chat/completions \
           <span>Made for developers.</span>
         </div>
       </footer>
+
+      {showAuth && <Auth onClose={closeAuth} />}
     </>
   )
 }

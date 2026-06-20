@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500;600;700&display=swap');
+
+/* ── OVERLAY ── */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+  animation: overlayFade 0.2s ease both;
+}
+
+/* ── CARD ── */
+.auth_main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0c0c0c;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 2.5rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Geist', system-ui, sans-serif;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,106,255,0.06);
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth_close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #505050;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.auth_close:hover {
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+}
+
+.auth_title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.auth_subtitle {
+  font-size: 0.85rem;
+  color: #707070;
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+
+.auth_main h3 {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #a0a0a0;
+  letter-spacing: 0.02em;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── INPUTS ── */
+.auth_main input {
+  width: 100%;
+  background: #111111;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+.auth_main input::placeholder {
+  color: #505050;
+}
+
+.auth_main input:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+
+.auth_main input:focus {
+  border-color: #7c6aff;
+  background: #181818;
+  box-shadow: 0 0 0 3px rgba(124,106,255,0.12);
+}
+
+/* ── BUTTON ── */
+.auth_submit {
+  margin-top: 1.75rem;
+  width: 100%;
+  background: #7c6aff;
+  color: #fff;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
+}
+
+.auth_submit:hover {
+  background: #9180ff;
+  box-shadow: 0 0 28px rgba(124,106,255,0.18);
+  transform: translateY(-1px);
+}
+
+.auth_submit:active {
+  transform: translateY(0);
+}
+
+/* ── ERROR ── */
+.auth_error {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #ff5c5c;
+  background: rgba(255,92,92,0.08);
+  border: 1px solid rgba(255,92,92,0.2);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  text-align: center;
+  animation: fadeUp 0.25s ease both;
+}
+
+/* ── TOGGLE LINK ── */
+.auth_toggle {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #505050;
+  cursor: pointer;
+}
+
+.auth_toggle span {
+  color: #7c6aff;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+.auth_toggle:hover span {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .auth_main {
+    padding: 2rem 1.5rem;
+  }
+}

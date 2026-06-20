@@ -10,6 +10,8 @@ const getapikey=()=>{
     return key_hash;
 }
 
+
+
 apiRouter.post("/api-key/create",userauth,async(req,res)=>{
     try{
         const userid=req.user;
@@ -29,7 +31,7 @@ apiRouter.post("/api-key/create",userauth,async(req,res)=>{
                 key_hash
             }
         });
-        res.json({message:"api-key created successfully"},{newkey});
+        res.json({message:"api-key created successfully"},newkey);
     }catch(err){
         console.log(err);
         res.status(500).json({

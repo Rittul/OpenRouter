@@ -20,11 +20,7 @@ conversationRouter.post("/createconvo",userauth,async(req,res)=>{
     }
 });
 
-conversationRouter.delete(
-  "/deleteconvo/:id",
-  userauth,
-  async (req, res) => {
-
+conversationRouter.delete("/deleteconvo/:id",userauth,async (req, res) => {
     try {
 
       const id = parseInt(req.params.id);
