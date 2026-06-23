@@ -10,7 +10,28 @@ const getapikey=()=>{
     return key_hash;
 }
 
-
+apiRouter.get("/getapikeys",userauth,async(req,res)=>{
+    try{
+        const userid=req.user;
+        const data=await prisma.apiKey.findMany({
+            where:{
+                user_id:userid
+            },
+            select:{
+                id:true,
+                name:true,
+                key_hash:true,
+                disabled:true,
+            }
+        })
+         return res.json({data});
+    }catch(err){
+        console.log(err.message);
+        res.status(500).json({
+        message: "Internal server error"
+        });
+    }
+})
 
 apiRouter.post("/api-key/create",userauth,async(req,res)=>{
     try{
@@ -22,7 +43,7 @@ apiRouter.post("/api-key/create",userauth,async(req,res)=>{
                 name
             }
         });
-        if(ispresent) return res.status(400).send("This name alreday exist choose something else");
+        if (ispresent) {return res.status(400).json({message: "This name already exists, choose something else"});}
         const key_hash=getapikey();
         const newkey= await prisma.apiKey.create({
             data:{

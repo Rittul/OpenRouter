@@ -8,8 +8,19 @@ chatRouter.post("/completion", userauth, async (req, res) => {
   try {
     const userid = req.user;
 
-    const { conversationId, content } = req.body;
+    const { conversationId, content ,slug} = req.body;
 
+    let modelSlug;
+
+    if (slug) {
+      modelSlug = slug;
+    } else {
+      modelSlug = "gemini-2.5-flash";
+    }
+
+    if(modelSlug!="gemini-2.5-flash"){
+      return res.json({messages:`${slug} is not supported yet! due to garibi`});
+    }
     // validate content
     if (!content) {
       return res.status(400).json({
@@ -41,6 +52,7 @@ chatRouter.post("/completion", userauth, async (req, res) => {
       });
     }
     // save user message
+    // console.log(conversationId);
     await prisma.message.create({
       data: {
         conversation_id: conversationId,
@@ -59,7 +71,7 @@ chatRouter.post("/completion", userauth, async (req, res) => {
       },
     });
 
-    // convert for gemini
+    // convert for gemini or other model
     const formattedMessages = messages.map((msg) => ({
       role: msg.role,
       content: msg.content,
@@ -67,19 +79,26 @@ chatRouter.post("/completion", userauth, async (req, res) => {
 
     // generate AI response
     const aiResponse = await generateGeminiResponse(formattedMessages);
-    const mapping = await prisma.modelProviderMapping.findFirst({
-      where: {
-        model: {
-          slug: "gemini-2.5-flash",
-        },
+    const mapping =await prisma.modelProviderMapping.findFirst({
+      where:{
+        model:{
+          slug:modelSlug
+        }
       },
+      include:{
+        model:true,
+        provider:true
+      }
     });
+    if (!mapping) {
+      return res.status(400).json({
+        message:"Unsupported model"
+      });
+    }
 
-    const inputCost =
-      Number(aiResponse.input_tokens) * Number(mapping.input_token_cost);
+    const inputCost =Number(aiResponse.input_tokens) * Number(mapping.input_token_cost);
 
-    const outputCost =
-      Number(aiResponse.output_tokens) * Number(mapping.output_token_cost);
+    const outputCost =Number(aiResponse.output_tokens) * Number(mapping.output_token_cost);
 
     const totalCost = inputCost + outputCost;
 
@@ -155,7 +174,9 @@ chatRouter.get("/getmessages/:id", userauth, async (req, res) => {
         created_at: "asc",
       },
     });
-    return res.json({ response });
+    return res.json({
+      messages: response
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -175,7 +196,7 @@ chatRouter.get("/getconvo", userauth, async (req, res) => {
         messages: {
           take: 1,
           orderBy: {
-            created_at: "desc",
+            created_at: "asc",
           },
         },
       },

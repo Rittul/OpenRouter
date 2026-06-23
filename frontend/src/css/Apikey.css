@@ -79,63 +79,6 @@
   margin-bottom: 1.25rem;
 }
 
-/* ── REVEAL NEW KEY BANNER ── */
-.apikey__reveal {
-  border: 1px solid rgba(34,197,94,0.25);
-  background: rgba(34,197,94,0.05);
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1.5rem;
-}
-.apikey__reveal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-2);
-  margin-bottom: 0.7rem;
-}
-.apikey__reveal-close {
-  background: transparent;
-  border: none;
-  color: var(--text-3);
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: color 0.15s;
-}
-.apikey__reveal-close:hover { color: var(--text-1); }
-.apikey__reveal-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.apikey__reveal-value {
-  flex: 1;
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  color: var(--green);
-  background: var(--surface-2);
-  border: 1px solid var(--border-md);
-  border-radius: 8px;
-  padding: 0.55rem 0.8rem;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-.apikey__reveal-copy {
-  font-family: var(--font);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: 7px;
-  padding: 0.5rem 0.85rem;
-  cursor: pointer;
-  transition: background 0.18s;
-  flex-shrink: 0;
-}
-.apikey__reveal-copy:hover { background: #9180ff; }
-
 /* ── TABLE ── */
 .apikey__table {
   border: 1px solid var(--border);
@@ -144,7 +87,7 @@
 }
 .apikey__row {
   display: grid;
-  grid-template-columns: 1.2fr 1.6fr 1fr 1fr 70px;
+  grid-template-columns: 1fr 2fr 1fr 70px;
   align-items: center;
   gap: 1rem;
   padding: 0.9rem 1.4rem;
@@ -167,16 +110,85 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── KEY VALUE + INLINE ACTIONS ──
+   The whole wrap is constrained so revealing the full key
+   never grows the row — it scrolls inside its own box instead. */
+.apikey__value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
+}
+.apikey__value-scroll {
+  flex: 1;
+  min-width: 0;
+  max-width: 280px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  /* hide scrollbar but keep it scrollable */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hi) transparent;
+}
+.apikey__value-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.apikey__value-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-hi);
+  border-radius: 4px;
 }
 .apikey__value {
-  font-size: 0.8rem;
+  display: block;
+  font-size: 0.78rem;
   font-family: var(--mono);
   color: var(--text-2);
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
+  width: max-content;
 }
-.apikey__created {
-  font-size: 0.8rem;
+.apikey__value--full {
+  color: var(--text-1);
+}
+.apikey__icon-btn {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 500;
   color: var(--text-3);
+  background: transparent;
+  border: 1px solid var(--border-md);
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
 }
+.apikey__icon-btn:hover {
+  color: var(--text-1);
+  border-color: var(--border-hi);
+  background: rgba(255,255,255,0.04);
+}
+
+/* copy feedback */
+.apikey__copy-btn {
+  min-width: 52px;
+  text-align: center;
+}
+.apikey__copy-btn--copied {
+  color: var(--green);
+  border-color: rgba(34,197,94,0.35);
+  background: rgba(34,197,94,0.08);
+  animation: copyPop 0.28s ease;
+}
+
 .apikey__empty {
   padding: 2.5rem 1.4rem;
   text-align: center;
@@ -372,11 +384,16 @@
   from { opacity: 0; transform: translateY(10px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+@keyframes copyPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
 
 /* ── RESPONSIVE ── */
 @media (max-width: 720px) {
   .apikey { padding: 2rem 1.25rem; }
-  .apikey__row { grid-template-columns: 1.3fr 1fr 70px; }
-  .apikey__row span:nth-child(3),
-  .apikey__row span:nth-child(4) { display: none; }
+  .apikey__row { grid-template-columns: 1fr 1fr 60px; }
+  .apikey__row span:nth-child(3) { display: none; }
+  .apikey__value-scroll { max-width: 110px; }
 }

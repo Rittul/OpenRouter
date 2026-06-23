@@ -1,32 +1,88 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import "../css/Sidebar.css";
+import { ProfileContext } from "../context/Profilcontext";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
 
 const NAV_ITEMS = [
-  { key: "chat", label: "Chat", icon: "💬" },
-  { key: "keys", label: "API Keys", icon: "🔑" },
-  { key: "credits", label: "Credits", icon: "💳" },
+  { key: "keys",    label: "API Keys", icon: "🔑", path: "/apikey" },
+  { key: "credits", label: "Credits",  icon: "💳", path: "/credits" },
+  { key: "chat",    label: "Chat",     icon: "💬", path: "/chats" },
 ];
 
-const Sidebar = ({ active = "chat", onNavigate, user = {} }) => {
-  const [profileOpen, setProfileOpen] = useState(false);
+const Sidebar = ({ active = "keys", onNavigate }) => {
+  const { profile, setProfile } = useContext(ProfileContext);
+  const [profileOpen,   setProfileOpen]   = useState(false);
+  const [chatOpen,      setChatOpen]      = useState(false);
+  const [convos,        setConvos]        = useState([]);
+  const [convosLoading, setConvosLoading] = useState(false);
+
   const profileRef = useRef(null);
+  const navigate   = useNavigate();
 
-  const {
-    name = "Dev User",
-    email = "dev@example.com",
-    avatarUrl = "",
-    credits = 24.5,
-  } = user;
-
+  // fetch profile on mount
   useEffect(() => {
-    const onClickOutside = (e) => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/profile`, { withCredentials: true });
+        setProfile(res.data.userdetails);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err.response?.data);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  // close profile menu on outside click
+  useEffect(() => {
+    const handler = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
       }
     };
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // fetch conversations only on first open — reuse cached state on re-opens
+  useEffect(() => {
+    if (!chatOpen) return;         // panel is closing, skip
+    if (convos.length > 0) return; // already fetched, use cached data
+
+    const fetchConvos = async () => {
+      setConvosLoading(true);
+      try {
+        const res = await axios.get(`${BASE_URL}/chat/getconvo`, { withCredentials: true });
+        setConvos(res.data?.conversations || res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch conversations:", err.response?.data);
+        setConvos([]);
+      } finally {
+        setConvosLoading(false);
+      }
+    };
+    fetchConvos();
+  }, [chatOpen]);
+
+  const name    = profile?.name    ?? "...";
+  const balance = profile?.balance ?? 0;
+
+  const handleLogout = async () => {
+    await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const handleNavClick = (item) => {
+    if (item.key === "chat") {
+      setChatOpen((prev) => !prev);
+      navigate(item.path);
+    } else {
+      setChatOpen(false);
+      navigate(item.path);
+    }
+  };
 
   return (
     <aside className="sidebar">
@@ -41,11 +97,11 @@ const Sidebar = ({ active = "chat", onNavigate, user = {} }) => {
         <div className="sidebar__credits-row">
           <div className="sidebar__credits-info">
             <span className="sidebar__credits-label">Balance</span>
-            <span className="sidebar__credits-value">${credits.toFixed(2)}</span>
+            <span className="sidebar__credits-value">${Number(balance).toFixed(2)}</span>
           </div>
           <button
             className="sidebar__credits-add"
-            onClick={() => onNavigate?.("credits")}
+            onClick={() => { setChatOpen(false); navigate("/credits"); }}
             title="Add credits"
           >
             + Add
@@ -59,15 +115,67 @@ const Sidebar = ({ active = "chat", onNavigate, user = {} }) => {
         <ul className="sidebar__nav-list">
           {NAV_ITEMS.map((item) => (
             <li key={item.key}>
+
+              {/* nav row */}
               <button
-                className={`sidebar__nav-item${
-                  active === item.key ? " sidebar__nav-item--active" : ""
-                }`}
-                onClick={() => onNavigate?.(item.key)}
+                className={`sidebar__nav-item${active === item.key ? " sidebar__nav-item--active" : ""}`}
+                onClick={() => handleNavClick(item)}
               >
                 <span className="sidebar__nav-icon">{item.icon}</span>
                 <span className="sidebar__nav-label">{item.label}</span>
+                {item.key === "chat" && (
+                  <span className={`sidebar__caret${chatOpen ? " sidebar__caret--open" : ""}`}>›</span>
+                )}
               </button>
+
+              {/* conversation list — only under Chat, toggles */}
+              {item.key === "chat" && (
+                <div className={`sidebar__convos${chatOpen ? " sidebar__convos--open" : ""}`}>
+                  <div className="sidebar__convos-inner">
+                    <button
+                      className="sidebar__new-chat"
+                      onClick={() => navigate("/chat")}
+                    >
+                      <span className="sidebar__new-chat-icon">＋</span>
+                      New chat
+                    </button>
+
+                    {convosLoading ? (
+                      <p className="sidebar__convos-empty">Loading...</p>
+                    ) : convos.length === 0 ? (
+                      <p className="sidebar__convos-empty">No conversations yet</p>
+                    ) : (
+                      <ul className="sidebar__convo-list">
+                        {convos.map((c) => (
+                          <li key={c.id}>
+                            <button
+                              className="sidebar__convo-item"
+                              onClick={() => navigate(`/chat/${c.id}`)}
+                              title={c.messages?.[0]?.content || "New conversation"}
+                            >
+                              <span className="sidebar__convo-dot" />
+                              <span className="sidebar__convo-title">
+                                {c.messages?.[0]?.content
+                                  ? c.messages[0].content.slice(0, 36) + (c.messages[0].content.length > 36 ? "…" : "")
+                                  : "New conversation"}
+                              </span>
+                              {c.created_at && (
+                                <span className="sidebar__convo-time">
+                                  {new Date(c.created_at).toLocaleDateString(undefined, {
+                                    month: "short",
+                                    day: "numeric",
+                                  })}
+                                </span>
+                              )}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+
             </li>
           ))}
         </ul>
@@ -79,29 +187,20 @@ const Sidebar = ({ active = "chat", onNavigate, user = {} }) => {
           <div className="sidebar__profile-menu">
             <button
               className="sidebar__profile-menu-item"
-              onClick={() => {
-                onNavigate?.("profile");
-                setProfileOpen(false);
-              }}
+              onClick={() => { onNavigate?.("profile"); setProfileOpen(false); }}
             >
               <span>👤</span> Update profile
             </button>
             <button
               className="sidebar__profile-menu-item"
-              onClick={() => {
-                onNavigate?.("settings");
-                setProfileOpen(false);
-              }}
+              onClick={() => { onNavigate?.("settings"); setProfileOpen(false); }}
             >
               <span>⚙️</span> Settings
             </button>
             <div className="sidebar__profile-menu-divider" />
             <button
               className="sidebar__profile-menu-item sidebar__profile-menu-item--danger"
-              onClick={() => {
-                onNavigate?.("logout");
-                setProfileOpen(false);
-              }}
+              onClick={() => { handleLogout(); setProfileOpen(false); }}
             >
               <span>↪</span> Log out
             </button>
@@ -113,15 +212,10 @@ const Sidebar = ({ active = "chat", onNavigate, user = {} }) => {
           onClick={() => setProfileOpen((p) => !p)}
         >
           <span className="sidebar__avatar">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={name} />
-            ) : (
-              name.charAt(0).toUpperCase()
-            )}
+            {name.charAt(0).toUpperCase()}
           </span>
           <span className="sidebar__profile-info">
             <span className="sidebar__profile-name">{name}</span>
-            <span className="sidebar__profile-email">{email}</span>
           </span>
           <span className="sidebar__profile-caret">⌃</span>
         </button>

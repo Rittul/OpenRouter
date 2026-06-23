@@ -2,23 +2,24 @@ import React, { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import "../CSS/Auth.css";
-
+import { useNavigate } from "react-router-dom";
 const Auth = ({ onClose }) => {
   const [flag, setFlag] = useState(true);
   const [username, setUsername] = useState("");
-  const [email, setemailId] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setemailId] = useState("modi@gmail.com");
+  const [password, setPassword] = useState("913@Modi");
   const [error, seterror] = useState("");
+  const navigate = useNavigate();
 
   const handlelogin = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}/login`, { email, password });
+      const res = await axios.post(`${BASE_URL}/login`, { email, password },{ withCredentials: true });
       if (res.data?.token) {
         localStorage.setItem("token", res.data.token);
       }
       alert("login Successfull!");
       onClose?.();
-      // navigate("/home");
+      navigate("/apikey");
     } catch (err) {
       seterror(err.response?.data?.message || "Something went wrong");
       setTimeout(() => {

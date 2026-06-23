@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --black:        #000000;
+  --surface-1:    #0c0c0c;
+  --surface-2:    #111111;
+  --surface-3:    #181818;
+  --border:       rgba(255,255,255,0.07);
+  --border-md:    rgba(255,255,255,0.12);
+  --border-hi:    rgba(255,255,255,0.20);
+  --text-1:       #ffffff;
+  --text-2:       #a0a0a0;
+  --text-3:       #505050;
+  --accent:       #7c6aff;
+  --accent-glow:  rgba(124,106,255,0.14);
+  --green:        #22c55e;
+  --font:         'Geist', system-ui, sans-serif;
+  --mono:         'Geist Mono', monospace;
+}
+
+.credits {
+  font-family: var(--font);
+  padding: 2.5rem 3rem;
+  max-width: 640px;
+}
+
+.credits__header {
+  margin-bottom: 2rem;
+}
+.credits__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+.credits__subtitle {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ── BALANCE CARD ── */
+.credits__balance-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-md);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+.credits__balance-card::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 220px;
+  top: -80px;
+  right: -80px;
+  background: radial-gradient(ellipse, rgba(124,106,255,0.16) 0%, transparent 70%);
+  pointer-events: none;
+}
+.credits__balance-label {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  position: relative;
+}
+.credits__balance-value {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.03em;
+  position: relative;
+}
+.credits__balance-note {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  position: relative;
+}
+
+/* ── ADD CREDITS CARD ── */
+.credits__add-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+}
+.credits__add-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 0.3rem;
+}
+.credits__add-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.credits__amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+.credits__amount {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border-md);
+  border-radius: 10px;
+  padding: 0.7rem 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.credits__amount:hover {
+  border-color: var(--border-hi);
+  color: var(--text-1);
+}
+.credits__amount--active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--text-1);
+}
+
+.credits__add-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
+}
+.credits__add-btn:hover:not(:disabled) {
+  background: #9180ff;
+  box-shadow: 0 0 28px var(--accent-glow);
+  transform: translateY(-1px);
+}
+.credits__add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.credits__disclaimer {
+  font-size: 0.74rem;
+  font-family: var(--mono);
+  color: var(--text-3);
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 540px) {
+  .credits {
+    padding: 2rem 1.25rem;
+  }
+  .credits__amounts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .credits__balance-value {
+    font-size: 2.4rem;
+  }
+}

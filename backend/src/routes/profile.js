@@ -15,17 +15,17 @@ profileRouter.get("/profile",userauth,async(req,res)=>{
             }
         });
         const name=user.email.split("@")[0];
-        const apikeys= await prisma.apiKey.findMany({
-            where:{
-                user_id:userid
-            },
-            select:{
-                name:true,
-                key_hash:true,
-                disabled:true,
-                last_used_at:true
-            }
-        });
+        // const apikeys= await prisma.apiKey.findMany({
+        //     where:{
+        //         user_id:userid
+        //     },
+        //     select:{
+        //         name:true,
+        //         key_hash:true,
+        //         disabled:true,
+        //         last_used_at:true
+        //     }
+        // });
 
         const credit=await prisma.credit.findUnique({
             where:{
@@ -37,7 +37,7 @@ profileRouter.get("/profile",userauth,async(req,res)=>{
         });
         const userdetails={
             name,
-            apikeys,
+            // apikeys,
             balance:credit.balance
         };
         return res.json({userdetails});
@@ -49,5 +49,31 @@ profileRouter.get("/profile",userauth,async(req,res)=>{
     }
 })
 
+profileRouter.post("/add-credits",userauth,async(req,res)=>{
+    try{
+        const userid=req.user;
+        const {amount}=req.body;
+       const updatedCredit = await prisma.credit.update({
+            where: {
+                user_id: userid
+            },
+            data: {
+                balance: {
+                    increment: Number(amount)
+                }
+            }
+        });
+
+        res.json({
+            message: "Balance increased successfully",
+            balance: updatedCredit.balance
+        });
+    }catch(err){
+        console.log(err.message);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
 
 module.exports=profileRouter;
