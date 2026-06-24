@@ -4,12 +4,18 @@ import { ProfileContext } from "../context/Profilcontext";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { createConversation } from "../utils/chatUtils";
 
 const NAV_ITEMS = [
   { key: "keys",    label: "API Keys", icon: "🔑", path: "/apikey" },
   { key: "credits", label: "Credits",  icon: "💳", path: "/credits" },
   { key: "chat",    label: "Chat",     icon: "💬", path: "/chats" },
 ];
+
+
+
+
+
 
 const Sidebar = ({ active = "keys", onNavigate }) => {
   const { profile, setProfile } = useContext(ProfileContext);
@@ -33,6 +39,16 @@ const Sidebar = ({ active = "keys", onNavigate }) => {
     };
     fetchProfile();
   }, []);
+
+  const handleNewChat = async () => {
+  try {
+    const id = await createConversation();
+
+    navigate(`/chat/${id}`);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   // close profile menu on outside click
   useEffect(() => {
@@ -77,7 +93,7 @@ const Sidebar = ({ active = "keys", onNavigate }) => {
   const handleNavClick = (item) => {
     if (item.key === "chat") {
       setChatOpen((prev) => !prev);
-      navigate(item.path);
+      // navigate(item.path);
     } else {
       setChatOpen(false);
       navigate(item.path);
@@ -134,7 +150,7 @@ const Sidebar = ({ active = "keys", onNavigate }) => {
                   <div className="sidebar__convos-inner">
                     <button
                       className="sidebar__new-chat"
-                      onClick={() => navigate("/chat")}
+                      onClick={handleNewChat}
                     >
                       <span className="sidebar__new-chat-icon">＋</span>
                       New chat

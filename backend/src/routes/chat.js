@@ -142,7 +142,12 @@ chatRouter.post("/completion", userauth, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-
+    if (err.status === 503) {
+    return res.status(503).json({
+      message:
+        "Gemini is currently experiencing high demand. Please try again in a few moments.",
+    });
+  }
     return res.status(500).json({
       message: "Internal server error",
     });

@@ -3,6 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useParams, useNavigate } from "react-router-dom";
 import "../css/Chat.css";
+import { createConversation } from "../utils/chatUtils";
 
 const Chat = () => {
   const { id: convoIdFromUrl } = useParams(); // from /chat/:id
@@ -96,7 +97,6 @@ const Chat = () => {
 
     setLoading(true);
     try {
-        // console.log("convoId:", convoId);
       const body = {
         content: text,
         slug: selectedModel.slug,
@@ -163,14 +163,21 @@ const Chat = () => {
     }
   };
 
-  const startNewChat = () => {
+
+
+  const startNewChat = async () => {
+  try {
+    const id = await createConversation();
+
     setMessages([]);
-    setConvoId(null);
-    setError("");
-    setUnsupported("");
-    navigate("/chat");
-    inputRef.current?.focus();
-  };
+    setConvoId(id);
+
+    navigate(`/chat/${id}`);
+  } catch (err) {
+    console.error(err);
+    setError("Failed to create conversation");
+  }
+};
 
   return (
     <div className="chat">
@@ -228,13 +235,16 @@ const Chat = () => {
 
       {/* ── MESSAGES ── */}
       <div className="chat__messages">
-        {messages.length === 0 && !loading && (
+        {messages.length === 0 && !loading && !convoIdFromUrl && (
           <div className="chat__empty">
             <span className="chat__empty-icon">◈</span>
-            <p className="chat__empty-title">Start a conversation</p>
+            <p className="chat__empty-title">No conversation selected</p>
             <p className="chat__empty-sub">
-              Select a model above and send a message.
+              Pick a previous chat from the sidebar, or click <strong>New chat</strong> to start one.
             </p>
+            <button className="chat__topbar-btn" onClick={startNewChat}>
+              ✎ Start new chat
+            </button>
           </div>
         )}
 
