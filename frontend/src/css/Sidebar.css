@@ -17,11 +17,31 @@
   --green:        #22c55e;
   --font:         'Geist', system-ui, sans-serif;
   --mono:         'Geist Mono', monospace;
+  --sidebar-w:    260px;
+}
+
+/* ── BACKDROP (mobile only) ── */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 199;
+  animation: backdropIn 0.22s ease both;
+}
+.sidebar-backdrop--visible {
+  display: block;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── SIDEBAR SHELL ── */
 .sidebar {
-  width: 260px;
+  width: var(--sidebar-w);
   height: 100vh;
   background: var(--surface-1);
   border-right: 1px solid var(--border);
@@ -30,6 +50,9 @@
   font-family: var(--font);
   flex-shrink: 0;
   overflow: hidden;
+  position: relative;
+  z-index: 200;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── LOGO ── */
@@ -43,6 +66,25 @@
 }
 .sidebar__logo-icon { font-size: 1.3rem; color: var(--accent); line-height: 1; }
 .sidebar__logo-text { font-size: 0.98rem; font-weight: 600; color: var(--text-1); letter-spacing: -0.01em; }
+
+/* mobile close button — only visible on mobile */
+.sidebar__close-btn {
+  display: none;
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.sidebar__close-btn:hover {
+  color: var(--text-1);
+  background: rgba(255,255,255,0.06);
+}
 
 /* ── CREDITS ── */
 .sidebar__section {
@@ -171,13 +213,11 @@
 
 /* ── CONVERSATION PANEL ── */
 .sidebar__convos {
-  /* collapsed — zero height, hidden */
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sidebar__convos--open {
-  /* open — large enough for any list */
   max-height: 420px;
 }
 .sidebar__convos-inner {
@@ -224,7 +264,6 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  /* scroll inside if many convos */
   max-height: 340px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -369,19 +408,57 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── HAMBURGER BUTTON (rendered in layout, not sidebar) ── */
+.sidebar-hamburger {
+  display: none;
+  position: fixed;
+  top: 0.85rem;
+  left: 1rem;
+  z-index: 201;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-md);
+  color: var(--text-1);
+  font-size: 1.15rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.sidebar-hamburger:hover {
+  background: var(--surface-3);
+  border-color: var(--border-hi);
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  .sidebar { width: 72px; }
-  .sidebar__logo-text,
-  .sidebar__credits-info,
-  .sidebar__nav-heading,
-  .sidebar__nav-label,
-  .sidebar__caret,
-  .sidebar__profile-info,
-  .sidebar__profile-caret,
-  .sidebar__convos { display: none; }
-  .sidebar__logo,
-  .sidebar__credits-row { justify-content: center; }
-  .sidebar__nav-item { justify-content: center; }
-  .sidebar__profile-trigger { justify-content: center; }
+  /* show hamburger */
+  .sidebar-hamburger {
+    display: flex;
+  }
+
+  /* show in-sidebar close button */
+  .sidebar__close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* sidebar off-screen by default on mobile */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.6);
+  }
+
+  /* when open */
+  .sidebar--open {
+    transform: translateX(0);
+  }
 }

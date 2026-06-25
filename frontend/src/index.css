@@ -1,0 +1,36 @@
+/* ── GLOBAL RESET & BASE ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* prevent horizontal scroll bleed */
+  overflow-x: hidden;
+  /* use dynamic viewport height for mobile browsers with address bar */
+  min-height: 100dvh;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+#root {
+  height: 100%;
+  min-height: 100dvh;
+}
+
+/* smooth touch scrolling everywhere */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* remove tap highlight on mobile */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}

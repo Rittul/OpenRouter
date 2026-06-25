@@ -165,14 +165,29 @@
 }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .credits {
+    padding: 1.5rem 1.25rem;
+    padding-top: 4.5rem; /* room for mobile hamburger */
+  }
+}
+
 @media (max-width: 540px) {
   .credits {
-    padding: 2rem 1.25rem;
+    padding: 1.5rem 1rem;
+    padding-top: 4.5rem;
   }
   .credits__amounts {
     grid-template-columns: repeat(2, 1fr);
   }
   .credits__balance-value {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
   }
+  .credits__balance-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .credits__add-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .credits__title { font-size: 1.25rem; }
 }

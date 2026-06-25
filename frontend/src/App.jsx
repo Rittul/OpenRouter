@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Landingpage from './components/Landingpage'
@@ -9,6 +10,7 @@ import Chat from './components/Chat'
 // Persistent layout: Sidebar always visible on the left
 const DashboardLayout = () => {
   const location = useLocation()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Derive the active nav key from the current path
   const activeKey =
@@ -17,9 +19,23 @@ const DashboardLayout = () => {
     location.pathname === '/chats'     ? 'chat'    : 'chat';
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Sidebar active={activeKey} />
-      <main style={{ flex: 1, overflow: 'auto' }}>
+    <div style={{ display: 'flex', height: '100dvh', overflow: 'hidden' }}>
+      {/* Hamburger button — only visible on mobile via CSS */}
+      <button
+        className="sidebar-hamburger"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open sidebar"
+      >
+        ☰
+      </button>
+
+      <Sidebar
+        active={activeKey}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      <main style={{ flex: 1, overflow: 'auto', minWidth: 0 }}>
         <Routes>
           <Route path="/apikey"   element={<Apikey />} />
           <Route path="/credits"  element={<Credits />} />

@@ -41,6 +41,8 @@ async (messages) => {
         response.usageMetadata
         ?.candidatesTokenCount || 0,
 
+      thinking_tokens:response.usageMetadata?.thoughtsTokenCount || 0,
+
       total_tokens:
         response.usageMetadata
         ?.totalTokenCount || 0
@@ -54,5 +56,4 @@ async (messages) => {
   }
 };
 
-module.exports =
-generateGeminiResponse;
+module.exports =generateGeminiResponse;

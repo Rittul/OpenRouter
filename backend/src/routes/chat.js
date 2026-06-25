@@ -3,8 +3,9 @@ const chatRouter = express.Router();
 const prisma = require("../config/prisma");
 const userauth = require("../middleware/auth");
 const generateGeminiResponse = require("../services/providers/gemini");
+const rateLimit = require("../middleware/rateLimit");
 
-chatRouter.post("/completion", userauth, async (req, res) => {
+chatRouter.post("/completion", userauth, rateLimit,async (req, res) => {
   try {
     const userid = req.user;
 
@@ -98,7 +99,7 @@ chatRouter.post("/completion", userauth, async (req, res) => {
 
     const inputCost =Number(aiResponse.input_tokens) * Number(mapping.input_token_cost);
 
-    const outputCost =Number(aiResponse.output_tokens) * Number(mapping.output_token_cost);
+    const outputCost =Number(aiResponse.output_tokens+aiResponse.thinking_tokens) *Number(mapping.output_token_cost);
 
     const totalCost = inputCost + outputCost;
 

@@ -53,8 +53,6 @@ model ApiKey {
   last_used_at  DateTime?
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  conversations Conversation[]
 }
 
 model Credit {
@@ -125,12 +123,9 @@ model ModelProviderMapping {
 model Conversation {
   id          Int       @id @default(autoincrement())
   user_id     Int
-  api_key_id  Int?
   created_at  DateTime  @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  api_key ApiKey? @relation(fields: [api_key_id], references: [id], onDelete: SetNull)
 
   messages Message[]
 }

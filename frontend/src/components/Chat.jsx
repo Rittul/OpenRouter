@@ -12,6 +12,7 @@ const Chat = () => {
   const [models, setModels]           = useState([]);
   const [selectedModel, setSelectedModel] = useState(null); // { name, slug }
   const [modelOpen, setModelOpen]     = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState({});
 
   const [messages, setMessages]       = useState([]);
   const [input, setInput]             = useState("");
@@ -23,6 +24,7 @@ const Chat = () => {
   const bottomRef   = useRef(null);
   const inputRef    = useRef(null);
   const modelRef    = useRef(null);
+  const modelBtnRef = useRef(null);
 
   // ── fetch models on mount ──
   useEffect(() => {
@@ -76,6 +78,21 @@ const Chat = () => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // ── position dropdown below the button ──
+  const openDropdown = () => {
+    if (modelBtnRef.current) {
+      const rect = modelBtnRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const dropdownMaxH = Math.min(spaceBelow - 12, window.innerHeight * 0.6);
+      setDropdownStyle({
+        top: rect.bottom + 6,
+        left: Math.max(8, rect.left),
+        maxHeight: Math.max(dropdownMaxH, 200),
+      });
+    }
+    setModelOpen((p) => !p);
+  };
 
   // ── scroll to bottom on new messages ──
   useEffect(() => {
@@ -163,21 +180,17 @@ const Chat = () => {
     }
   };
 
-
-
   const startNewChat = async () => {
-  try {
-    const id = await createConversation();
-
-    setMessages([]);
-    setConvoId(id);
-
-    navigate(`/chat/${id}`);
-  } catch (err) {
-    console.error(err);
-    setError("Failed to create conversation");
-  }
-};
+    try {
+      const id = await createConversation();
+      setMessages([]);
+      setConvoId(id);
+      navigate(`/chat/${id}`);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create conversation");
+    }
+  };
 
   return (
     <div className="chat">
@@ -187,15 +200,16 @@ const Chat = () => {
           {/* model selector */}
           <div className="chat__model-select" ref={modelRef}>
             <button
+              ref={modelBtnRef}
               className="chat__model-btn"
-              onClick={() => setModelOpen((p) => !p)}
+              onClick={openDropdown}
             >
               <span className="chat__model-dot" />
               <span>{selectedModel ? selectedModel.name : "Select model"}</span>
               <span className={`chat__model-caret${modelOpen ? " chat__model-caret--open" : ""}`}>›</span>
             </button>
             {modelOpen && (
-              <div className="chat__model-dropdown">
+              <div className="chat__model-dropdown" style={dropdownStyle}>
                 {models.length === 0 ? (
                   <p className="chat__model-empty">No models available</p>
                 ) : (

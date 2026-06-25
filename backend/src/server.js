@@ -21,7 +21,9 @@ const apiRouter=require("./routes/apikey");
 const chatRouter =require("./routes/chat");
 const conversationroute=require("./routes/conversation");
 const modelrouter=require("./routes/model");
+const apichatRouter = require("./routes/apiroute");
 
+app.use("/v1", apichatRouter);
 app.use("/chat", chatRouter);
 app.use("/",conversationroute);
 app.use("/",authRouter);
