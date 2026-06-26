@@ -1,8 +1,5 @@
-const Redis=require("ioredis");
+const Redis = require("ioredis");
 
-const redis= new Redis({
-    host:"localhost",
-    port: 6379,
-});
+const redis = new Redis({ host: 'redis', port: 6379 });
 
-module.exports=redis;
+module.exports = redis;
