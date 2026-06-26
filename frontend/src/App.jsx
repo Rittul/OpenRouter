@@ -6,7 +6,7 @@ import Sidebar from './components/Sidebar'
 import Apikey from './components/Apikey'
 import Credits from './components/Credits'
 import Chat from './components/Chat'
-
+import Docs from "./components/Docs";
 // Persistent layout: Sidebar always visible on the left
 const DashboardLayout = () => {
   const location = useLocation()
@@ -55,6 +55,7 @@ function App() {
       {/* Public routes */}
       <Route path="/"     element={<Landingpage />} />
       <Route path="/Auth" element={<Landingpage showAuthModal />} />
+      <Route path="/docs" element={<Docs />} />
 
       {/* Protected dashboard — sidebar always rendered here */}
       <Route

@@ -48,12 +48,33 @@ const FEATURES = [
   },
 ]
 
-const NAV_LINKS = ['Models', 'Docs', 'Pricing', 'Rankings', 'Changelog']
+const NAV_LINKS = [
+  { label: 'Models', target: 'models' },
+  { label: 'Docs', path: '/docs' },
+  { label: 'Pricing', target: 'pricing' },
+  { label: 'Rankings', target: 'rankings' },
+  { label: 'Changelog', target: 'changelog' },
+]
 
 const Landingpage = ({ showAuthModal = false }) => {
   const navigate = useNavigate()
   const [scrolled, setScrolled] = useState(false)
   const [showAuth, setShowAuth] = useState(showAuthModal)
+
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleNavClick = (item) => (e) => {
+    e.preventDefault()
+
+    if (item.path) {
+      navigate(item.path)
+      return
+    }
+
+    scrollToSection(item.target)
+  }
 
   const openAuth = (e) => {
     e?.preventDefault()
@@ -82,8 +103,16 @@ const Landingpage = ({ showAuthModal = false }) => {
             <span className="nav__brand-name">OpenRouter</span>
           </a>
           <ul className="nav__links">
-            {NAV_LINKS.map(l => (
-              <li key={l}><a href="#" className="nav__link">{l}</a></li>
+            {NAV_LINKS.map((item) => (
+              <li key={item.label}>
+                <a
+                  href={item.path ?? `#${item.target}`}
+                  className="nav__link"
+                  onClick={handleNavClick(item)}
+                >
+                  {item.label}
+                </a>
+              </li>
             ))}
           </ul>
           <div className="nav__right">
@@ -141,7 +170,7 @@ const Landingpage = ({ showAuthModal = false }) => {
       </div>
 
       {/* ── MODELS TABLE ── */}
-      <section className="models">
+      <section className="models" id="models">
         <div className="section__wrap">
           <div className="section__header">
             <div>
@@ -179,7 +208,7 @@ const Landingpage = ({ showAuthModal = false }) => {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="features">
+      <section className="features" id="pricing">
         <div className="section__wrap">
           <p className="section__eyebrow">Platform</p>
           <h2 className="section__title">Everything you need.<br />Nothing you don't.</h2>
@@ -196,7 +225,7 @@ const Landingpage = ({ showAuthModal = false }) => {
       </section>
 
       {/* ── INTEGRATION ── */}
-      <section className="compat">
+      <section className="compat" id="rankings">
         <div className="section__wrap compat__inner">
           <div className="compat__text">
             <p className="section__eyebrow">Compatibility</p>
@@ -223,7 +252,7 @@ const Landingpage = ({ showAuthModal = false }) => {
       </section>
 
       {/* ── CTA ── */}
-      <section className="cta">
+      <section className="cta" id="changelog">
         <div className="cta__glow" />
         <div className="cta__wrap">
           <h2 className="cta__title">Start building today</h2>
@@ -233,7 +262,7 @@ const Landingpage = ({ showAuthModal = false }) => {
           </p>
           <div className="cta__actions">
             <a href="#" className="btn btn--primary btn--lg" onClick={openAuth}>Create free account</a>
-            <a href="#" className="btn btn--outline btn--lg">Read the docs</a>
+            <a href="/docs" className="btn btn--outline btn--lg">Read the docs</a>
           </div>
         </div>
       </section>
