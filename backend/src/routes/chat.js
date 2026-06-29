@@ -47,7 +47,7 @@ chatRouter.post("/completion", userauth, rateLimit,async (req, res) => {
         user_id: userid,
       },
     });
-    if (Number(credit.balance) <= 0.01) {
+    if (Number(credit.balance) <= 0.05) {
       return res.status(400).json({
         message: "Insufficient credits",
       });
@@ -154,6 +154,72 @@ chatRouter.post("/completion", userauth, rateLimit,async (req, res) => {
     });
   }
 });
+
+chatRouter.get("/getmessages/:id", userauth, async (req, res) => {
+  try {
+    const userid = req.user;
+    const conversationId = parseInt(req.params.id);
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        id: conversationId,
+        user_id: userid,
+      },
+    });
+
+    if (!conversation) {
+      return res.status(404).json({
+        message: "Conversation not found",
+      });
+    }
+
+    const response = await prisma.message.findMany({
+      where: {
+        conversation_id: conversationId,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+    return res.json({
+      messages: response
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
+
+chatRouter.get("/getconvo", userauth, async (req, res) => {
+  const userid=req.user;
+  try {
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        user_id: userid,
+      },
+      include: {
+        messages: {
+          take: 1,
+          orderBy: {
+            created_at: "asc",
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+    res.json({ conversations });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
+
+module.exports = chatRouter;
 
 chatRouter.get("/getmessages/:id", userauth, async (req, res) => {
   try {

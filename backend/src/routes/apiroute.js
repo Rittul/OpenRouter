@@ -115,22 +115,33 @@ apichatRouter.post("/chat/completions", apiauth, rateLimit,async (req, res) => {
       }
     });
 
-  } catch (err) {
+  } catch(err){
 
-    console.log(err);
+    console.error(err);
 
-    if (err.status === 503) {
-      return res.status(503).json({
-        message:
-          "Gemini is currently experiencing high demand. Please try again later."
-      });
+    if(err.status===429){
+
+        return res.status(429).json({
+            message:
+            "Gemini API rate limit exceeded. Please try again later."
+        });
+
+    }
+
+    if(err.status===503){
+
+        return res.status(503).json({
+            message:
+            "Gemini is temporarily unavailable."
+        });
+
     }
 
     return res.status(500).json({
-      message: "Internal server error"
+        message:"Internal server error"
     });
 
-  }
+}
 });
 
 module.exports = apichatRouter;
