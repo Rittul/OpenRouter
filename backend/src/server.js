@@ -22,6 +22,7 @@ const chatRouter =require("./routes/chat");
 const conversationroute=require("./routes/conversation");
 const modelrouter=require("./routes/model");
 const apichatRouter = require("./routes/apiroute");
+const paymentRouter = require("./routes/payment");
 
 app.use("/v1", apichatRouter);
 app.use("/chat", chatRouter);
@@ -30,6 +31,7 @@ app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",apiRouter);
 app.use("/",modelrouter);
+app.use("/",paymentRouter);
 
 const PORT = process.env.PORT || 3000;
 

@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.3",
     "prisma": "^5.22.0",
     "redis": "^6.0.1",
+    "stripe": "^22.3.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {
