@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://YOUR-NETLIFY-SITE.netlify.app"
+  "https://opnrouterai.netlify.app"
 ];
 
 app.use(

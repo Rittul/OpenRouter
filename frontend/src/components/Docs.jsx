@@ -391,7 +391,7 @@ console.log(response.data);`} />
                 Create and manage your API keys, monitor usage, and top up credits
                 from your dashboard.
               </p>
-              <a href="/apikey" className="docs__cta-btn">
+              <a href="/" className="docs__cta-btn">
                 Go to Dashboard →
               </a>
             </div>

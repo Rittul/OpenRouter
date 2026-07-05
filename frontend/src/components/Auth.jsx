@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 const Auth = ({ onClose }) => {
   const [flag, setFlag] = useState(true);
   const [username, setUsername] = useState("");
-  const [email, setemailId] = useState("modi@gmail.com");
-  const [password, setPassword] = useState("913@Modi");
+  const [email, setemailId] = useState("");
+  const [password, setPassword] = useState("");
   const [error, seterror] = useState("");
   const navigate = useNavigate();
 
