@@ -33,8 +33,8 @@ authRouter.post("/signup",async(req,res)=>{
       const token =jwt.sign({userId:user.id},process.env.JWT_SECRET,{expiresIn:"1d"});
       res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax"
+        secure: true,
+        sameSite: "none"
         });
       res.status(201).json({
       message: "Signup successful",
@@ -98,8 +98,8 @@ authRouter.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure: true,
+      sameSite: "none"
     });
     
     res.status(200).json({
