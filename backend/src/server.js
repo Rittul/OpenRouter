@@ -29,16 +29,23 @@ app.get("/",(req,res)=>{
 })
 
 app.get("/health", async (req, res) => {
+  console.log("Health endpoint hit");
+
   try {
     await prisma.$queryRaw`SELECT 1`;
+
+    console.log("Database OK");
 
     res.status(200).json({
       status: "ok",
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
+    console.error("Health error:", err);
+
     res.status(500).json({
       status: "error",
+      error: err.message,
     });
   }
 });
