@@ -28,6 +28,21 @@ app.get("/",(req,res)=>{
     res.send("backend running!");
 })
 
+app.get("/health", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+
+    res.status(200).json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+    });
+  }
+});
+
 const authRouter= require("./routes/auth");
 const profileRouter=require("./routes/profile");
 const apiRouter=require("./routes/apikey");
