@@ -3,6 +3,7 @@ const app= express();
 require('dotenv').config();
 const cors=require("cors");
 const cookieParser = require("cookie-parser");
+const prisma = require("./config/prisma");
 
 const allowedOrigins = [
   "http://localhost:5173",
