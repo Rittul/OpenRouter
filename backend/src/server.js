@@ -27,7 +27,8 @@ app.use(cookieParser());
 
 app.get("/",(req,res)=>{
     res.send("backend running!");
-})
+});
+
 
 app.get("/health", async (req, res) => {
   console.log("Health endpoint hit");
